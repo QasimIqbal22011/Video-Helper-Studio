@@ -41,6 +41,10 @@ def parse_timestamp_from_filename(filename: str) -> Optional[float]:
         m = int(m_hms_colon.group(2))
         s = int(m_hms_colon.group(3))
         ms = float("0." + m_hms_colon.group(4)) if m_hms_colon.group(4) else 0.0
+        # If first segment is 00/0 and 4th segment is absent, e.g. 00:03:26,
+        # in video editing this is 00m:03s.26cs = 3.26s
+        if h == 0 and not m_hms_colon.group(4):
+            return m * 60.0 + s + (ms if ms else 0.0) if s >= 60 else (m + float(f"0.{s:02d}") if m < 60 and s < 100 else h * 3600.0 + m * 60.0 + s)
         return h * 3600.0 + m * 60.0 + s + ms
 
     # Pattern 2: MM:SS(.ms) with colon (e.g. 'image-1_00:00', '00:05', '01:23.500')
@@ -51,19 +55,37 @@ def parse_timestamp_from_filename(filename: str) -> Optional[float]:
         ms = float("0." + m_ms_colon.group(3)) if m_ms_colon.group(3) else 0.0
         return m * 60.0 + s + ms
 
-    # If an image index prefix exists like 'image-1_', 'img_2_', strip it before testing underscore/dash patterns
+    # Check if an image index prefix exists like 'image-1_', 'img_2_', 'slide-3-'
+    has_image_prefix = bool(re.search(r'^(?:image|img|slide|clip|pic|photo)[-_]?\d+[-_]', stem, flags=re.IGNORECASE))
     cleaned = re.sub(r'^(?:image|img|slide|clip|pic|photo)[-_]?\d+[-_]', '', stem, flags=re.IGNORECASE)
 
-    # Pattern 3: HH_MM_SS or HH-MM-SS
-    m_hms = re.search(r'(?:^|[^\d])(\d{1,2})[-_](\d{2})[-_](\d{2})(?:[-_. ](\d{1,3}))?(?:[^\d]|$)', cleaned)
-    if m_hms:
-        h = int(m_hms.group(1))
-        m = int(m_hms.group(2))
-        s = int(m_hms.group(3))
-        ms = float("0." + m_hms.group(4)) if m_hms.group(4) else 0.0
+    # Pattern 3: 4-segment timestamp: HH_MM_SS_MS / HH-MM-SS-MS (e.g. 01_02_03_25)
+    m_4part = re.search(r'(?:^|[^\d])(\d{1,2})[-_](\d{2})[-_](\d{2})[-_.](\d{1,3})(?:[^\d]|$)', cleaned)
+    if m_4part:
+        h = int(m_4part.group(1))
+        m = int(m_4part.group(2))
+        s = int(m_4part.group(3))
+        ms = float("0." + m_4part.group(4))
         return h * 3600.0 + m * 60.0 + s + ms
 
-    # Pattern 4: MM_SS or MM-SS or MM.SS
+    # Pattern 4: 3-segment timestamp with underscores/dashes:
+    # E.g. 'image-1_00_03_26' (00m 03s 26cs -> 3.26s) or '00_15_500' (00m 15s 500ms -> 15.5s)
+    # If the prefix was an image index prefix (e.g. image-1_00_03_26, image-2_01_03_26),
+    # or the first segment is 0/00, or the last segment is 3 digits (e.g. 500ms),
+    # this represents MM_SS_CS/MS (Minutes, Seconds, Centiseconds/Milliseconds).
+    m_3part = re.search(r'(?:^|[^\d])(\d{1,2})[-_](\d{2})[-_.](\d{2,3})(?:[^\d]|$)', cleaned)
+    if m_3part:
+        p1 = int(m_3part.group(1))
+        p2 = int(m_3part.group(2))
+        p3_str = m_3part.group(3)
+        frac = float("0." + p3_str)
+        if has_image_prefix or p1 == 0 or len(p3_str) == 3:
+            return p1 * 60.0 + p2 + frac
+        else:
+            p3 = int(p3_str)
+            return p1 * 3600.0 + p2 * 60.0 + p3
+
+    # Pattern 5: MM_SS or MM-SS or MM.SS (e.g. 00_05 -> 5s, 01_23 -> 83s, 00_00 -> 0s)
     m_ms = re.search(r'(?:^|[^\d])(\d{1,3})[-_.](\d{2})(?:[-_.](\d{1,3}))?(?:[^\d]|$)', cleaned)
     if m_ms:
         m = int(m_ms.group(1))
@@ -71,7 +93,7 @@ def parse_timestamp_from_filename(filename: str) -> Optional[float]:
         ms = float("0." + m_ms.group(3)) if m_ms.group(3) else 0.0
         return m * 60.0 + s + ms
 
-    # Pattern 5: 4 consecutive digits (e.g. 0000 -> 0s, 0130 -> 1m30s = 90s)
+    # Pattern 6: 4 consecutive digits (e.g. 0000 -> 0s, 0130 -> 1m30s = 90s)
     m_4d = re.search(r'(?:^|[^\d])(\d{2})(\d{2})(?:[^\d]|$)', cleaned)
     if m_4d:
         m = int(m_4d.group(1))

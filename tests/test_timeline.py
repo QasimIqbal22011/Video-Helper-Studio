@@ -20,7 +20,11 @@ def run_tests():
     assert parse_timestamp_from_filename("01:05:20.png") == 3920.0
     assert parse_timestamp_from_filename("00_15_500.png") == 15.5
     assert parse_timestamp_from_filename("scene_02_10.jpg") == 130.0
-    assert parse_timestamp_from_filename("0030_battle.png") == 30.0
+    assert parse_timestamp_from_filename("image-1_00_00.png") == 0.0
+    assert parse_timestamp_from_filename("image-1_00_03_26") == 3.26
+    assert parse_timestamp_from_filename("image-1_00_03_26.png") == 3.26
+    assert parse_timestamp_from_filename("00_03_26.jpg") == 3.26
+    assert parse_timestamp_from_filename("image-2_01_03_26.png") == 63.26
     print("Timestamp parsing tests passed!")
 
     print("\nTesting alignment calculations...")
