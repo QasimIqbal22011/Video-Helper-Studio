@@ -23,6 +23,7 @@ def parse_timestamp_from_filename(filename: str) -> Optional[float]:
     """
     Extracts timestamp cues in seconds from image filenames.
     Supports formats like:
+      - image-1_00:00.png, image-2_00:05.jpg, image_1_00:00.png
       - 00:00.png, 01:23.jpg, 01:05:20.png
       - 00_00.png, 01_23.jpg, 01_05_20.png
       - 00-00.png, 01-23.jpg
@@ -33,30 +34,50 @@ def parse_timestamp_from_filename(filename: str) -> Optional[float]:
     """
     stem = os.path.splitext(filename)[0]
 
-    # Pattern 1: HH:MM:SS or HH_MM_SS or HH-MM-SS
-    m_hms = re.search(r'(?:^|[^\d])(\d{1,2})[:_.-](\d{2})[:_.-](\d{2})(?:[:_.-](\d{1,3}))?(?:[^\d]|$)', stem)
+    # Pattern 1: HH:MM:SS(.ms) with colons (most specific and standard)
+    m_hms_colon = re.search(r'(?:^|[^\d])(\d{1,2}):(\d{2}):(\d{2})(?:[.:](\d{1,3}))?(?:[^\d]|$)', stem)
+    if m_hms_colon:
+        h = int(m_hms_colon.group(1))
+        m = int(m_hms_colon.group(2))
+        s = int(m_hms_colon.group(3))
+        ms = float("0." + m_hms_colon.group(4)) if m_hms_colon.group(4) else 0.0
+        return h * 3600.0 + m * 60.0 + s + ms
+
+    # Pattern 2: MM:SS(.ms) with colon (e.g. 'image-1_00:00', '00:05', '01:23.500')
+    m_ms_colon = re.search(r'(?:^|[^\d])(\d{1,3}):(\d{2})(?:[.:](\d{1,3}))?(?:[^\d]|$)', stem)
+    if m_ms_colon:
+        m = int(m_ms_colon.group(1))
+        s = int(m_ms_colon.group(2))
+        ms = float("0." + m_ms_colon.group(3)) if m_ms_colon.group(3) else 0.0
+        return m * 60.0 + s + ms
+
+    # If an image index prefix exists like 'image-1_', 'img_2_', strip it before testing underscore/dash patterns
+    cleaned = re.sub(r'^(?:image|img|slide|clip|pic|photo)[-_]?\d+[-_]', '', stem, flags=re.IGNORECASE)
+
+    # Pattern 3: HH_MM_SS or HH-MM-SS
+    m_hms = re.search(r'(?:^|[^\d])(\d{1,2})[-_](\d{2})[-_](\d{2})(?:[-_. ](\d{1,3}))?(?:[^\d]|$)', cleaned)
     if m_hms:
-        hrs = int(m_hms.group(1))
-        mins = int(m_hms.group(2))
-        secs = int(m_hms.group(3))
+        h = int(m_hms.group(1))
+        m = int(m_hms.group(2))
+        s = int(m_hms.group(3))
         ms = float("0." + m_hms.group(4)) if m_hms.group(4) else 0.0
-        return hrs * 3600.0 + mins * 60.0 + secs + ms
+        return h * 3600.0 + m * 60.0 + s + ms
 
-    # Pattern 2: MM:SS or MM_SS or MM-SS or MM.SS (e.g. 01:23, 00_15, 05-40)
-    m_ms = re.search(r'(?:^|[^\d])(\d{1,3})[:_.-](\d{2})(?:[:_.-](\d{1,3}))?(?:[^\d]|$)', stem)
+    # Pattern 4: MM_SS or MM-SS or MM.SS
+    m_ms = re.search(r'(?:^|[^\d])(\d{1,3})[-_.](\d{2})(?:[-_.](\d{1,3}))?(?:[^\d]|$)', cleaned)
     if m_ms:
-        mins = int(m_ms.group(1))
-        secs = int(m_ms.group(2))
+        m = int(m_ms.group(1))
+        s = int(m_ms.group(2))
         ms = float("0." + m_ms.group(3)) if m_ms.group(3) else 0.0
-        return mins * 60.0 + secs + ms
+        return m * 60.0 + s + ms
 
-    # Pattern 3: 4 consecutive digits (e.g. 0000 -> 0s, 0130 -> 1m30s = 90s)
-    m_4d = re.search(r'(?:^|[^\d])(\d{2})(\d{2})(?:[^\d]|$)', stem)
+    # Pattern 5: 4 consecutive digits (e.g. 0000 -> 0s, 0130 -> 1m30s = 90s)
+    m_4d = re.search(r'(?:^|[^\d])(\d{2})(\d{2})(?:[^\d]|$)', cleaned)
     if m_4d:
-        mins = int(m_4d.group(1))
-        secs = int(m_4d.group(2))
-        if mins < 60 and secs < 60:
-            return mins * 60.0 + secs
+        m = int(m_4d.group(1))
+        s = int(m_4d.group(2))
+        if m < 60 and s < 60:
+            return m * 60.0 + s
 
     return None
 

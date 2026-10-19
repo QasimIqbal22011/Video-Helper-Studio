@@ -24,7 +24,7 @@ A modern, standalone desktop application designed to automate tedious editing wo
 - **Pipeline Integration**: 1-click **"Send to Stitcher"** and **"Send to Timeline"** buttons.
 
 ### ⏱️ 3. Smart Timeline Image Aligner (Ready)
-- **Automated Mapping**: Parses timestamp cues from filenames (`00:00.png`, `00_07.jpg`, `01_23.png`, `0015.png`, etc.) and positions each image along the audio timeline.
+- **Automated Mapping**: Parses timestamp cues from filenames (`image-1_00:00.png`, `00:00.png`, `00_07.jpg`, `01_23.png`, `0015.png`, etc.) and positions each image along the audio timeline.
 - **Interactive Sequence Cards**: Displays live image thumbnails with start/end timestamps and duration badges.
 - **NVENC Hardware Acceleration**: High-speed video rendering using **NVIDIA RTX 3060 NVENC** (`h264_nvenc`) with CPU fallback (`libx264`).
 - **Embedded Video Player**: Watch and review the rendered 1080p video directly inside the app.

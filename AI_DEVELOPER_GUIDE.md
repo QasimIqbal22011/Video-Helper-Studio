@@ -90,6 +90,7 @@ A:\My Video Hwelper APP\
 - **Goal**: Automatically map timestamped still images to the voiceover audio track and render an MP4 video rough-cut.
 - **Inputs**: Voiceover audio file + batch of still images (`.png`, `.jpg`, `.jpeg`, `.webp`, `.bmp`).
 - **Timestamp Parsing**: Supported patterns in filenames:
+  - `image-1_00:00.png`, `image-2_00:05.jpg`, `image_1_00:00.png` (with index prefixes)
   - `00:00.png`, `01:23.jpg`, `01:05:20.png`
   - `00_00.png`, `01_23.jpg`, `00_15_500.png`
   - `00-00.png`, `01-23.jpg`

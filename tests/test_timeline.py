@@ -10,6 +10,10 @@ from src.core.ffmpeg_utils import get_ffmpeg_path
 
 def run_tests():
     print("Testing timestamp parsing...")
+    assert parse_timestamp_from_filename("image-1_00:00.png") == 0.0
+    assert parse_timestamp_from_filename("image-2_00:05.jpg") == 5.0
+    assert parse_timestamp_from_filename("image-10_01:23.png") == 83.0
+    assert parse_timestamp_from_filename("image_1_00:00.png") == 0.0
     assert parse_timestamp_from_filename("00:00.png") == 0.0
     assert parse_timestamp_from_filename("00_05.jpg") == 5.0
     assert parse_timestamp_from_filename("01_23.png") == 83.0
