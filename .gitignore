@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller / Build Artifacts
+build/
+dist/
+*.spec.bak
+
+# Large Binaries (exceeds GitHub 100MB file limit)
+resources/ffmpeg/ffmpeg.exe
+resources/ffmpeg/*.exe
+
+# Local Runtime Data & Logs
+debug_log.txt
+*.log
+imported_audio/
+imported_images/
+scratch_*/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store

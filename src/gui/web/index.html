@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Helper Studio</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- Startup Splash / Loading Screen -->
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-card">
+      <div class="splash-logo-box">
+        <svg class="splash-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+      </div>
+      <h2 class="splash-title">Video Helper Studio</h2>
+      <p class="splash-subtitle">YouTube Automation Creative Suite</p>
+
+      <div class="splash-loader-bar">
+        <div class="splash-loader-fill" id="splashFill" style="width: 15%;"></div>
+      </div>
+
+      <div class="splash-status-row">
+        <span class="splash-spinner"></span>
+        <span class="splash-status-text" id="splashStatusText">Initializing backend engines...</span>
+      </div>
+
+      <div class="splash-footer">
+        <span>NVIDIA RTX 3060 12GB • NVENC Accelerated</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-box">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>Video Helper</h1>
+          <span class="sub-badge">YouTube Automation</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section-label">WORKFLOW ENGINES</div>
+        
+        <button class="nav-item active" data-tab="stitcher">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          <span class="nav-label">Audio Stitcher</span>
+          <span class="badge active-badge">Ready</span>
+        </button>
+
+        <button class="nav-item" data-tab="silence" title="Strip dead air & silences">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+          <span class="nav-label">Silence Remover</span>
+          <span class="badge active-badge">Ready</span>
+        </button>
+
+        <button class="nav-item" data-tab="timeline" title="Auto-align timed images to voiceover">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span class="nav-label">Timeline Aligner</span>
+          <span class="badge active-badge">Ready</span>
+        </button>
+
+        <button class="nav-item disabled" data-tab="kenburns" title="Ken Burns zoom & transitions coming up!">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+          <span class="nav-label">Zoom & Transitions</span>
+          <span class="badge upcoming-badge">Step 4</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status-box" id="hardwareInfoCard">
+          <div class="status-indicator">
+            <span class="pulse-dot"></span>
+            <span class="status-text">Hardware Acceleration</span>
+          </div>
+          <div class="gpu-info" id="gpuLabel">RTX 3060 • NVENC Enabled</div>
+        </div>
+
+        <div class="theme-switch-row">
+          <span class="theme-label" id="themeText">Dark Obsidian</span>
+          <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Light / Dark Mode">
+            <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Stitcher View -->
+      <section class="view-panel active-panel" id="stitcherView">
+        <!-- View Header -->
+        <header class="panel-header">
+          <div>
+            <h2 class="panel-title">Audio Stitcher</h2>
+            <p class="panel-subtitle">Merge multiple voiceover takes into a single master track with smart gap spacing and YouTube loudness mastering.</p>
+          </div>
+          
+          <div class="header-stats">
+            <div class="stat-card">
+              <span class="stat-value" id="statClipCount">0</span>
+              <span class="stat-label">Clips</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="statTotalDuration">00:00</span>
+              <span class="stat-label">Total Duration</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+          <div class="action-group-left">
+            <button class="btn btn-primary" id="addFilesBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add Audio Clips
+            </button>
+            <button class="btn btn-secondary" id="sortNaturalBtn" title="Sort clips alphabetically / naturally (1, 2, 10...)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M7 12h10M10 18h4"></path>
+              </svg>
+              Sort Naturally
+            </button>
+            <button class="btn btn-ghost" id="clearAllBtn" title="Clear all clips">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Clear All
+            </button>
+          </div>
+
+          <div class="action-group-right">
+            <span class="tip-pill">Tip: Drag clips to reorder sequence</span>
+          </div>
+        </div>
+
+        <!-- Main Workspace Grid -->
+        <div class="workspace-grid">
+          <!-- Left: Audio Clips List & Dropzone -->
+          <div class="clips-container">
+            <input type="file" id="htmlAudioInput" multiple accept=".mp3,.wav,.m4a,.aac,.flac,.ogg,.wma" style="display:none">
+            <div class="dropzone" id="dropzone">
+              <div class="dropzone-content">
+                <div class="dropzone-icon-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                </div>
+                <h3>Drop Audio Files Here</h3>
+                <p>or click to browse from your computer</p>
+                <div class="supported-formats">Supports MP3, WAV, M4A, AAC, FLAC, OGG</div>
+              </div>
+            </div>
+
+            <!-- Clips List (Filled dynamically) -->
+            <div class="clips-list" id="clipsList" style="display: none;"></div>
+          </div>
+
+          <!-- Right: Stitching & Mastering Configuration -->
+          <div class="settings-sidebar">
+            <div class="card settings-card">
+              <h3 class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Mastering Parameters
+              </h3>
+
+              <!-- Gap Setting -->
+              <div class="setting-group">
+                <div class="setting-header">
+                  <label for="gapDuration">Pause Between Clips</label>
+                  <span class="setting-value-badge" id="gapDisplay">0.3s</span>
+                </div>
+                <div class="gap-chips">
+                  <button type="button" class="chip" data-gap="0.0">0.0s (None)</button>
+                  <button type="button" class="chip" data-gap="0.2">0.2s</button>
+                  <button type="button" class="chip active" data-gap="0.3">0.3s (Voice)</button>
+                  <button type="button" class="chip" data-gap="0.5">0.5s</button>
+                  <button type="button" class="chip" data-gap="1.0">1.0s</button>
+                </div>
+                <input type="range" id="gapSlider" min="0" max="3" step="0.05" value="0.3" class="range-slider">
+                <span class="setting-help">Creates natural pacing between paragraphs or voiceover takes.</span>
+              </div>
+
+              <!-- Normalization Toggle -->
+              <div class="setting-group">
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-title">YouTube Loudness Mastering</div>
+                    <div class="setting-help">Applies EBU R128 (-16 LUFS) to ensure all voiceover takes have uniform, punchy volume.</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="normalizeAudio" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Output Format & Quality -->
+              <div class="setting-group">
+                <label>Output Format & Quality</label>
+                <div class="format-select-grid">
+                  <label class="radio-card active">
+                    <input type="radio" name="outFormat" value="mp3" checked>
+                    <div class="radio-card-content">
+                      <span class="fmt-title">MP3</span>
+                      <span class="fmt-desc">320 kbps High</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="outFormat" value="wav">
+                    <div class="radio-card-content">
+                      <span class="fmt-title">WAV</span>
+                      <span class="fmt-desc">Lossless 16-bit</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="outFormat" value="m4a">
+                    <div class="radio-card-content">
+                      <span class="fmt-title">M4A</span>
+                      <span class="fmt-desc">AAC 320 kbps</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Sample Rate -->
+              <div class="setting-group">
+                <label for="sampleRateSelect">Sample Rate</label>
+                <select id="sampleRateSelect" class="form-select">
+                  <option value="48000" selected>48,000 Hz (YouTube Video Standard)</option>
+                  <option value="44100">44,100 Hz (CD Audio Standard)</option>
+                </select>
+              </div>
+
+              <!-- Destination File -->
+              <div class="setting-group">
+                <label>Export Destination</label>
+                <div class="destination-picker">
+                  <input type="text" id="outputPathInput" class="form-input" readonly placeholder="Click browse to select output file...">
+                  <button class="btn btn-secondary" id="browseDestBtn">Browse</button>
+                </div>
+              </div>
+
+              <!-- Primary Stitch Action -->
+              <div class="submit-section">
+                <button class="btn btn-primary btn-stitch" id="startStitchBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  Stitch & Master Audio
+                </button>
+              </div>
+            </div>
+
+            <!-- Progress Card (Shown during processing) -->
+            <div class="card progress-card" id="progressCard" style="display: none;">
+              <div class="progress-header">
+                <div class="progress-title-row">
+                  <span class="spinner"></span>
+                  <span class="progress-title" id="progressStatusText">Stitching audio clips...</span>
+                </div>
+                <span class="progress-percent" id="progressPercent">0%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+              </div>
+              <button class="btn btn-danger btn-sm" id="cancelStitchBtn">Cancel Process</button>
+            </div>
+
+            <!-- Success Card (Shown upon completion) -->
+            <div class="card success-card" id="successCard" style="display: none;">
+              <div class="success-header">
+                <div class="success-icon-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="success-title">Master Audio Generated!</h4>
+                  <p class="success-sub" id="successDetails">Total: 03:45 • 8.4 MB</p>
+                </div>
+              </div>
+
+              <!-- Master Audio Player Preview -->
+              <div class="master-player-box">
+                <audio id="masterAudioPlayer" controls class="custom-audio-player"></audio>
+              </div>
+
+              <div class="success-actions">
+                <button class="btn btn-secondary btn-sm" id="openFolderBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  Open in Explorer
+                </button>
+                <button class="btn btn-primary btn-sm" id="sendToSilenceBtn">
+                  Send to Silence Remover
+                </button>
+                <button class="btn btn-secondary btn-sm" id="sendStitchToTimelineBtn">
+                  Send to Timeline
+                </button>
+                <button class="btn btn-ghost btn-sm" id="dismissSuccessBtn">Dismiss</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Silence Remover View -->
+      <section class="view-panel" id="silenceView" style="display: none;">
+        <!-- Header -->
+        <header class="panel-header">
+          <div>
+            <h2 class="panel-title">Audio Silence Remover</h2>
+            <p class="panel-subtitle">Automatically detect and strip dead air, pauses, and unvoiced gaps from your YouTube voiceovers with safety voice buffers.</p>
+          </div>
+          
+          <div class="header-stats">
+            <div class="stat-card">
+              <span class="stat-value" id="silenceCountStat">0</span>
+              <span class="stat-label">Pauses Found</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="silenceSavedStat">0.0s</span>
+              <span class="stat-label">Dead Air Cut</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="silenceNewDurStat">00:00</span>
+              <span class="stat-label">New Duration</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Hidden input for file picking -->
+        <input type="file" id="silenceFileInput" accept=".mp3,.wav,.m4a,.aac,.flac,.ogg,.wma" style="display:none">
+
+        <!-- Workspace Grid -->
+        <div class="workspace-grid">
+          <!-- Left: Audio Source & Silence Telemetry -->
+          <div class="clips-container">
+            <!-- Dropzone for voiceover input -->
+            <div class="dropzone" id="silenceDropzone">
+              <div class="dropzone-content">
+                <div class="dropzone-icon-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                  </svg>
+                </div>
+                <h3>Drop Voiceover Audio Here</h3>
+                <p>or click to select file from your computer</p>
+                <div class="supported-formats">Supports MP3, WAV, M4A, AAC, FLAC, OGG</div>
+              </div>
+            </div>
+
+            <!-- Active Voiceover Card (Shown when file loaded) -->
+            <div class="card active-audio-card" id="silenceAudioCard" style="display: none;">
+              <div class="audio-card-header">
+                <div class="audio-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                  </svg>
+                </div>
+                <div class="audio-card-details">
+                  <div class="audio-card-name" id="silenceFileName">voiceover.wav</div>
+                  <div class="clip-meta-row">
+                    <span class="meta-pill" id="silenceFileFmt">WAV</span>
+                    <span class="meta-pill" id="silenceFileDur">00:00</span>
+                    <span class="meta-pill" id="silenceFileSr">48.0 kHz</span>
+                    <span class="meta-pill" id="silenceFileSize">0 MB</span>
+                  </div>
+                </div>
+                <button class="btn btn-ghost btn-sm" id="changeSilenceFileBtn">Change File</button>
+              </div>
+
+              <!-- Inline Audio Player for original -->
+              <div class="inline-player-wrapper" style="margin-top: 12px;">
+                <audio id="silenceOriginalPlayer" controls class="custom-audio-player"></audio>
+              </div>
+            </div>
+
+            <!-- Silence Intervals Telemetry Card (Shown after analysis) -->
+            <div class="card silence-telemetry-card" id="silenceTelemetryCard" style="display: none;">
+              <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
+                  Detected Silence Pauses
+                </div>
+                <span class="badge active-badge" id="silenceBadgeStats">Ready to Cut</span>
+              </div>
+              <div class="silence-list-container" id="silenceListContainer"></div>
+            </div>
+          </div>
+
+          <!-- Right: Silence Detection Settings -->
+          <div class="settings-sidebar">
+            <div class="card settings-card">
+              <h3 class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+                Detection Parameters
+              </h3>
+
+              <!-- Noise Threshold (dB) -->
+              <div class="setting-group">
+                <div class="setting-header">
+                  <label for="thresholdSlider">Silence Threshold</label>
+                  <span class="setting-value-badge" id="threshDisplay">-40 dB</span>
+                </div>
+                <div class="gap-chips">
+                  <button type="button" class="chip" data-thresh="-30">-30dB (Aggressive)</button>
+                  <button type="button" class="chip active" data-thresh="-40">-40dB (Balanced)</button>
+                  <button type="button" class="chip" data-thresh="-50">-50dB (Subtle)</button>
+                </div>
+                <input type="range" id="thresholdSlider" min="-60" max="-20" step="1" value="-40" class="range-slider">
+                <span class="setting-help">Audio below this volume level is flagged as dead air.</span>
+              </div>
+
+              <!-- Minimum Duration (sec) -->
+              <div class="setting-group">
+                <div class="setting-header">
+                  <label for="minDurationSlider">Min Pause Duration</label>
+                  <span class="setting-value-badge" id="minDurDisplay">0.40s</span>
+                </div>
+                <div class="gap-chips">
+                  <button type="button" class="chip" data-dur="0.25">0.25s (Tight)</button>
+                  <button type="button" class="chip active" data-dur="0.40">0.40s (Natural)</button>
+                  <button type="button" class="chip" data-dur="0.60">0.60s</button>
+                  <button type="button" class="chip" data-dur="1.00">1.00s</button>
+                </div>
+                <input type="range" id="minDurationSlider" min="0.1" max="2.0" step="0.05" value="0.4" class="range-slider">
+                <span class="setting-help">Pauses shorter than this will be kept for natural speech breathing.</span>
+              </div>
+
+              <!-- Safety Voice Buffer (Margin ms) -->
+              <div class="setting-group">
+                <div class="setting-header">
+                  <label for="marginSlider">Voice Safety Buffer</label>
+                  <span class="setting-value-badge" id="marginDisplay">80 ms</span>
+                </div>
+                <div class="gap-chips">
+                  <button type="button" class="chip" data-margin="40">40ms</button>
+                  <button type="button" class="chip active" data-margin="80">80ms (Recommended)</button>
+                  <button type="button" class="chip" data-margin="120">120ms</button>
+                </div>
+                <input type="range" id="marginSlider" min="0" max="250" step="10" value="80" class="range-slider">
+                <span class="setting-help">Padding preserved around speech edges to prevent clipping word ends.</span>
+              </div>
+
+              <!-- Normalization Toggle -->
+              <div class="setting-group">
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-title">YouTube Loudness Mastering</div>
+                    <div class="setting-help">Normalize master audio to EBU R128 (-16 LUFS).</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="silenceNormalize" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Output Format & Quality -->
+              <div class="setting-group">
+                <label>Output Format & Quality</label>
+                <div class="format-select-grid">
+                  <label class="radio-card active">
+                    <input type="radio" name="silenceFormat" value="mp3" checked>
+                    <div class="radio-card-content">
+                      <span class="fmt-title">MP3</span>
+                      <span class="fmt-desc">320 kbps</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="silenceFormat" value="wav">
+                    <div class="radio-card-content">
+                      <span class="fmt-title">WAV</span>
+                      <span class="fmt-desc">16-bit Lossless</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="silenceFormat" value="m4a">
+                    <div class="radio-card-content">
+                      <span class="fmt-title">M4A</span>
+                      <span class="fmt-desc">AAC 320 kbps</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Destination File -->
+              <div class="setting-group">
+                <label>Export Destination</label>
+                <div class="destination-picker">
+                  <input type="text" id="silenceOutputPathInput" class="form-input" readonly placeholder="Output file path...">
+                  <button class="btn btn-secondary" id="browseSilenceDestBtn">Browse</button>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="submit-section" style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" id="analyzeSilencesBtn" style="flex: 1;" disabled>
+                  Analyze Pauses
+                </button>
+                <button class="btn btn-primary" id="startSilenceRemovalBtn" style="flex: 1.5;" disabled>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Cut Silences
+                </button>
+              </div>
+            </div>
+
+            <!-- Silence Progress Card -->
+            <div class="card progress-card" id="silenceProgressCard" style="display: none;">
+              <div class="progress-header">
+                <div class="progress-title-row">
+                  <span class="spinner"></span>
+                  <span class="progress-title" id="silenceProgressStatusText">Detecting silences...</span>
+                </div>
+                <span class="progress-percent" id="silenceProgressPercent">0%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="silenceProgressBarFill" style="width: 0%;"></div>
+              </div>
+              <button class="btn btn-danger btn-sm" id="cancelSilenceBtn">Cancel</button>
+            </div>
+
+            <!-- Silence Success Card -->
+            <div class="card success-card" id="silenceSuccessCard" style="display: none;">
+              <div class="success-header">
+                <div class="success-icon-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="success-title">Silences Cleaned & Mastered!</h4>
+                  <p class="success-sub" id="silenceSuccessDetails">Saved 01:15 • 24 pauses removed</p>
+                </div>
+              </div>
+
+              <div class="master-player-box">
+                <audio id="silenceCleanPlayer" controls class="custom-audio-player"></audio>
+              </div>
+
+              <div class="success-actions">
+                <button class="btn btn-secondary btn-sm" id="openSilenceFolderBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  Open in Explorer
+                </button>
+                <button class="btn btn-primary btn-sm" id="sendToStitcherBtn">
+                  Send to Stitcher
+                </button>
+                <button class="btn btn-secondary btn-sm" id="sendSilenceToTimelineBtn">
+                  Send to Timeline
+                </button>
+                <button class="btn btn-ghost btn-sm" id="dismissSilenceSuccessBtn">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Smart Timeline Image Aligner View -->
+      <section class="view-panel" id="timelineView" style="display: none;">
+        <!-- Header -->
+        <header class="panel-header">
+          <div>
+            <h2 class="panel-title">Smart Timeline Image Aligner</h2>
+            <p class="panel-subtitle">Automatically synchronize timestamped images (<code>00:00.png</code>, <code>01_23.jpg</code>) to your voiceover script and render an NVENC-accelerated video rough-cut.</p>
+          </div>
+          
+          <div class="header-stats">
+            <div class="stat-card">
+              <span class="stat-value" id="statTimelineImgCount">0</span>
+              <span class="stat-label">Images Aligned</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="statTimelineAudioDur">00:00</span>
+              <span class="stat-label">Audio Length</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="statTimelineCoverage">0%</span>
+              <span class="stat-label">Timeline Coverage</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Hidden inputs for file picking -->
+        <input type="file" id="timelineAudioInput" accept=".mp3,.wav,.m4a,.aac,.flac,.ogg,.wma" style="display:none">
+        <input type="file" id="timelineImageInput" multiple accept=".png,.jpg,.jpeg,.webp,.bmp" style="display:none">
+
+        <!-- Workspace Grid -->
+        <div class="workspace-grid">
+          <!-- Left: Audio Slot & Interactive Images Timeline -->
+          <div class="clips-container">
+            
+            <!-- Voiceover Audio Slot Card -->
+            <div class="timeline-audio-slot-card" id="timelineAudioSlotCard">
+              <div class="timeline-slot-header">
+                <div class="slot-title-row">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  </svg>
+                  <span class="slot-title">Voiceover Audio Reference</span>
+                </div>
+                <div class="slot-actions">
+                  <button class="btn btn-secondary btn-xs" id="changeTimelineAudioBtn" style="display: none;">Change Audio</button>
+                </div>
+              </div>
+
+              <!-- Audio Dropzone (When no audio loaded) -->
+              <div class="timeline-audio-dropzone" id="timelineAudioDropzone">
+                <div class="audio-drop-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                  </svg>
+                  <div>
+                    <h4>Drop Voiceover Audio Here</h4>
+                    <p>or click to select file (or send from Stitcher / Silence Remover)</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active Audio Details (When audio loaded) -->
+              <div class="timeline-active-audio-bar" id="timelineActiveAudioBar" style="display: none;">
+                <div class="active-audio-pill">
+                  <span class="audio-pulse-dot"></span>
+                  <span class="audio-active-name" id="timelineAudioName">voiceover.mp3</span>
+                  <span class="meta-pill" id="timelineAudioMeta">03:45 • MP3</span>
+                </div>
+                <div class="timeline-audio-player-wrapper">
+                  <audio id="timelineAudioPlayer" controls class="custom-audio-player mini-player"></audio>
+                </div>
+              </div>
+            </div>
+
+            <!-- Images Sequence Workspace -->
+            <div class="timeline-images-wrapper">
+              <!-- Images Dropzone (When empty) -->
+              <div class="dropzone" id="timelineImagesDropzone">
+                <div class="dropzone-content">
+                  <div class="dropzone-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </div>
+                  <h3>Drop Timestamped Images Here</h3>
+                  <p>Named e.g. <code>00:00.png</code>, <code>00_07.jpg</code>, <code>01_23.png</code> or click to browse</p>
+                  <div class="supported-formats">Auto-calculates durations & sequence along audio track</div>
+                </div>
+              </div>
+
+              <!-- Interactive Sequence List & Toolbar (When images loaded) -->
+              <div class="timeline-sequence-container" id="timelineSequenceContainer" style="display: none;">
+                <div class="action-bar" style="margin-bottom: 12px; padding: 0;">
+                  <div class="action-group-left">
+                    <button class="btn btn-primary btn-sm" id="addMoreImagesBtn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      Add Images
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="realignTimelineBtn" title="Re-sort and recalculate timings">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                      </svg>
+                      Re-Align
+                    </button>
+                    <button class="btn btn-ghost btn-sm" id="exportCueSheetBtn" title="Export CSV Cue Sheet for Premiere / DaVinci Resolve">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                      </svg>
+                      Export CSV
+                    </button>
+                    <button class="btn btn-ghost btn-sm" id="clearImagesBtn" title="Remove all images">
+                      Clear Images
+                    </button>
+                  </div>
+                  <div class="action-group-right">
+                    <span class="tip-pill">Tip: Images automatically fill the voiceover timeline</span>
+                  </div>
+                </div>
+
+                <!-- Scrollable Cards Grid -->
+                <div class="timeline-cards-grid" id="timelineCardsGrid"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right: Render Settings & Video Preview -->
+          <div class="settings-sidebar">
+            <div class="card settings-card">
+              <h3 class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                </svg>
+                Render Parameters
+              </h3>
+
+              <!-- Video Resolution -->
+              <div class="setting-group">
+                <label>Target Resolution</label>
+                <div class="format-select-grid" style="grid-template-columns: repeat(3, 1fr);">
+                  <label class="radio-card active">
+                    <input type="radio" name="videoRes" value="1080p" checked>
+                    <div class="radio-card-content">
+                      <span class="fmt-title">1080p</span>
+                      <span class="fmt-desc">Full HD</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="videoRes" value="4k">
+                    <div class="radio-card-content">
+                      <span class="fmt-title">4K</span>
+                      <span class="fmt-desc">UHD</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="videoRes" value="720p">
+                    <div class="radio-card-content">
+                      <span class="fmt-title">720p</span>
+                      <span class="fmt-desc">Fast Draft</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Frame Rate -->
+              <div class="setting-group">
+                <div class="setting-header">
+                  <label>Frame Rate (FPS)</label>
+                  <span class="setting-value-badge" id="fpsDisplay">30 FPS</span>
+                </div>
+                <div class="gap-chips">
+                  <button type="button" class="chip" data-fps="24">24 FPS (Film)</button>
+                  <button type="button" class="chip active" data-fps="30">30 FPS (Standard)</button>
+                  <button type="button" class="chip" data-fps="60">60 FPS (Smooth)</button>
+                </div>
+              </div>
+
+              <!-- Hardware Acceleration -->
+              <div class="setting-group">
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-title">NVIDIA NVENC Acceleration</div>
+                    <div class="setting-help">Uses RTX 3060 hardware encoder for ultra-fast rendering.</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="timelineNvencToggle" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Destination File -->
+              <div class="setting-group">
+                <label>Output Video Destination</label>
+                <div class="destination-picker">
+                  <input type="text" id="timelineOutputPathInput" class="form-input" readonly placeholder="Output video path...">
+                  <button class="btn btn-secondary" id="browseTimelineDestBtn">Browse</button>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="submit-section">
+                <button class="btn btn-primary btn-block" id="startRenderVideoBtn" disabled>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  Render Synchronized Video
+                </button>
+              </div>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="card progress-card" id="timelineProgressCard" style="display: none;">
+              <div class="progress-header">
+                <div class="progress-title-row">
+                  <span class="spinner"></span>
+                  <span class="progress-title" id="timelineProgressStatusText">Encoding video draft...</span>
+                </div>
+                <span class="progress-percent" id="timelineProgressPercent">0%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="timelineProgressBarFill" style="width: 0%;"></div>
+              </div>
+              <button class="btn btn-danger btn-sm" id="cancelTimelineRenderBtn">Cancel Render</button>
+            </div>
+
+            <!-- Success Card & Video Player -->
+            <div class="card success-card" id="timelineSuccessCard" style="display: none;">
+              <div class="success-header">
+                <div class="success-icon-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="success-title">Synchronized Video Ready!</h4>
+                  <p class="success-sub" id="timelineSuccessDetails">03:45 • 18.5 MB • 24 images aligned</p>
+                </div>
+              </div>
+
+              <!-- Embedded Video Player Preview -->
+              <div class="video-player-container" style="margin: 12px 0;">
+                <video id="timelineVideoPlayer" controls class="custom-video-player" style="width: 100%; border-radius: var(--radius-md); background: #000; max-height: 240px;"></video>
+              </div>
+
+              <div class="success-actions">
+                <button class="btn btn-secondary btn-sm" id="openTimelineVideoFolderBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  Open in Explorer
+                </button>
+                <button class="btn btn-ghost btn-sm" id="dismissTimelineSuccessBtn">Dismiss</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
